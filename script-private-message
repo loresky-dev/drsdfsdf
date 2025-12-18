@@ -1,0 +1,249 @@
+local Players=game:GetService("Players")
+local UIS=game:GetService("UserInputService")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local player=Players.LocalPlayer
+local gui=Instance.new("ScreenGui")
+gui.Name="GlobalAlertUI"
+gui.ResetOnSpawn=false
+gui.Parent=player:WaitForChild("PlayerGui")
+local main=Instance.new("Frame")
+main.Size=UDim2.fromScale(0.35,0.42)
+main.Position=UDim2.fromScale(0.325,0.36)
+main.BackgroundColor3=Color3.fromRGB(15,15,20)
+main.Parent=gui
+local corner=Instance.new("UICorner")
+corner.CornerRadius=UDim.new(0,20)
+corner.Parent=main
+local stroke=Instance.new("UIStroke")
+stroke.Thickness=2
+stroke.Color=Color3.fromRGB(120,120,255)
+stroke.Parent=main
+local gradient=Instance.new("UIGradient")
+gradient.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(40,40,80)),ColorSequenceKeypoint.new(1,Color3.fromRGB(10,10,20))}
+gradient.Parent=main
+local title=Instance.new("TextLabel")
+title.Size=UDim2.fromScale(1,0.2)
+title.BackgroundTransparency=1
+title.Text="GLOBAL ALERT CONSOLE"
+title.TextColor3=Color3.fromRGB(180,180,255)
+title.Font=Enum.Font.GothamBold
+title.TextScaled=true
+title.Parent=main
+local box=Instance.new("TextBox")
+box.Size=UDim2.fromScale(0.9,0.25)
+box.Position=UDim2.fromScale(0.05,0.25)
+box.BackgroundColor3=Color3.fromRGB(20,20,30)
+box.TextColor3=Color3.fromRGB(220,220,255)
+box.Font=Enum.Font.Gotham
+box.TextScaled=true
+box.PlaceholderText="enter alert message"
+box.ClearTextOnFocus=false
+box.Parent=main
+local boxCorner=Instance.new("UICorner")
+boxCorner.CornerRadius=UDim.new(0,14)
+boxCorner.Parent=box
+local prefixBox=Instance.new("TextBox")
+prefixBox.Size=UDim2.fromScale(0.9,0.14)
+prefixBox.Position=UDim2.fromScale(0.05,0.52)
+prefixBox.BackgroundColor3=Color3.fromRGB(20,20,30)
+prefixBox.TextColor3=Color3.fromRGB(220,220,255)
+prefixBox.Font=Enum.Font.Gotham
+prefixBox.TextScaled=true
+prefixBox.PlaceholderText="prefix (optional)"
+prefixBox.ClearTextOnFocus=false
+prefixBox.Parent=main
+local pbCorner=Instance.new("UICorner")
+pbCorner.CornerRadius=UDim.new(0,14)
+pbCorner.Parent=prefixBox
+local colorBox=Instance.new("TextBox")
+colorBox.Size=UDim2.fromScale(0.9,0.14)
+colorBox.Position=UDim2.fromScale(0.05,0.66)
+colorBox.BackgroundColor3=Color3.fromRGB(20,20,30)
+colorBox.TextColor3=Color3.fromRGB(220,220,255)
+colorBox.Font=Enum.Font.Gotham
+colorBox.TextScaled=true
+colorBox.PlaceholderText="r,g,b or random"
+colorBox.ClearTextOnFocus=false
+colorBox.Parent=main
+local cbCorner=Instance.new("UICorner")
+cbCorner.CornerRadius=UDim.new(0,14)
+cbCorner.Parent=colorBox
+local function parseColor(text)
+ local r,g,b=string.match(text,"(%d+)%s*,%s*(%d+)%s*,%s*(%d+)")
+ if r and g and b then
+  return Color3.fromRGB(tonumber(r),tonumber(g),tonumber(b))
+ end
+ return Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+end
+local send=Instance.new("TextButton")
+send.Size=UDim2.fromScale(0.4,0.18)
+send.Position=UDim2.fromScale(0.05,0.6)
+send.BackgroundColor3=Color3.fromRGB(60,60,120)
+send.Text="SEND"
+send.TextColor3=Color3.fromRGB(255,255,255)
+send.Font=Enum.Font.GothamBold
+send.TextScaled=true
+send.Parent=main
+local sendCorner=Instance.new("UICorner")
+sendCorner.CornerRadius=UDim.new(0,14)
+sendCorner.Parent=send
+local spam=Instance.new("TextButton")
+spam.Size=UDim2.fromScale(0.4,0.18)
+spam.Position=UDim2.fromScale(0.55,0.6)
+spam.BackgroundColor3=Color3.fromRGB(120,40,40)
+spam.Text="START SPAM"
+spam.TextColor3=Color3.fromRGB(255,255,255)
+spam.Font=Enum.Font.GothamBold
+spam.TextScaled=true
+spam.Parent=main
+local spamCorner=Instance.new("UICorner")
+spamCorner.CornerRadius=UDim.new(0,14)
+spamCorner.Parent=spam
+local speedBox=Instance.new("TextBox")
+speedBox.Size=UDim2.fromScale(0.4,0.14)
+speedBox.Position=UDim2.fromScale(0.05,0.8)
+speedBox.BackgroundColor3=Color3.fromRGB(20,20,30)
+speedBox.TextColor3=Color3.fromRGB(220,220,255)
+speedBox.Font=Enum.Font.GothamBold
+speedBox.TextScaled=true
+speedBox.Text="0.15"
+speedBox.ClearTextOnFocus=false
+speedBox.Parent=main
+local speedCorner=Instance.new("UICorner")
+speedCorner.CornerRadius=UDim.new(0,14)
+speedCorner.Parent=speedBox
+local randomize=Instance.new("TextButton")
+randomize.Size=UDim2.fromScale(0.4,0.14)
+randomize.Position=UDim2.fromScale(0.55,0.8)
+randomize.BackgroundColor3=Color3.fromRGB(40,120,80)
+randomize.Text="RANDOMIZE"
+randomize.TextColor3=Color3.fromRGB(255,255,255)
+randomize.Font=Enum.Font.GothamBold
+randomize.TextScaled=true
+randomize.Parent=main
+local randomCorner=Instance.new("UICorner")
+randomCorner.CornerRadius=UDim.new(0,14)
+randomCorner.Parent=randomize
+local rainbow=false
+local rainbowBtn=Instance.new("TextButton")
+rainbowBtn.Size=UDim2.fromScale(0.4,0.14)
+rainbowBtn.Position=UDim2.fromScale(0.05,0.95)
+rainbowBtn.BackgroundColor3=Color3.fromRGB(120,80,160)
+rainbowBtn.Text="RAINBOW"
+rainbowBtn.TextColor3=Color3.fromRGB(255,255,255)
+rainbowBtn.Font=Enum.Font.GothamBold
+rainbowBtn.TextScaled=true
+rainbowBtn.Parent=main
+local rbCorner=Instance.new("UICorner")
+rbCorner.CornerRadius=UDim.new(0,14)
+rbCorner.Parent=rainbowBtn
+local clear=Instance.new("TextButton")
+clear.Size=UDim2.fromScale(0.4,0.14)
+clear.Position=UDim2.fromScale(0.55,0.95)
+clear.BackgroundColor3=Color3.fromRGB(80,80,80)
+clear.Text="CLEAR"
+clear.TextColor3=Color3.fromRGB(255,255,255)
+clear.Font=Enum.Font.GothamBold
+clear.TextScaled=true
+clear.Parent=main
+local clCorner=Instance.new("UICorner")
+clCorner.CornerRadius=UDim.new(0,14)
+clCorner.Parent=clear
+local dragging=false
+local dragStart
+local startPos
+main.InputBegan:Connect(function(input)
+ if input.UserInputType==Enum.UserInputType.MouseButton1 then
+  dragging=true
+  dragStart=input.Position
+  startPos=main.Position
+ end
+end)
+main.InputEnded:Connect(function(input)
+ if input.UserInputType==Enum.UserInputType.MouseButton1 then
+  dragging=false
+ end
+end)
+UIS.InputChanged:Connect(function(input)
+ if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
+  local delta=input.Position-dragStart
+  main.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
+ end
+end)
+local spamming=false
+local randomMode=false
+local randLenBox=Instance.new("TextBox")
+randLenBox.Size=UDim2.fromScale(0.4,0.14)
+randLenBox.Position=UDim2.fromScale(0.05,0.95)
+randLenBox.BackgroundColor3=Color3.fromRGB(20,20,30)
+randLenBox.TextColor3=Color3.fromRGB(220,220,255)
+randLenBox.Font=Enum.Font.GothamBold
+randLenBox.TextScaled=true
+randLenBox.Text="1"
+randLenBox.ClearTextOnFocus=false
+randLenBox.Parent=main
+local rlCorner=Instance.new("UICorner")
+rlCorner.CornerRadius=UDim.new(0,14)
+rlCorner.Parent=randLenBox
+local charsetBox=Instance.new("TextBox")
+charsetBox.Size=UDim2.fromScale(0.4,0.14)
+charsetBox.Position=UDim2.fromScale(0.55,0.95)
+charsetBox.BackgroundColor3=Color3.fromRGB(20,20,30)
+charsetBox.TextColor3=Color3.fromRGB(220,220,255)
+charsetBox.Font=Enum.Font.GothamBold
+charsetBox.TextScaled=true
+charsetBox.Text="abcdefghijklmnopqrstuvwxyz"
+charsetBox.ClearTextOnFocus=false
+charsetBox.Parent=main
+local csCorner=Instance.new("UICorner")
+csCorner.CornerRadius=UDim.new(0,14)
+csCorner.Parent=charsetBox
+local hue=0
+local function fire()
+ local msg=prefixBox.Text~="" and (prefixBox.Text.." "..box.Text) or box.Text
+ if randomMode then
+  local len=math.clamp(tonumber(randLenBox.Text) or 1,1,50)
+  local chars=charsetBox.Text
+  local extra=""
+  for i=1,len do
+   local idx=math.random(1,#chars)
+   extra=extra..string.sub(chars,idx,idx)
+  end
+  msg=msg.." "..extra
+ end
+ local color
+ if rainbow then
+  hue=(hue+0.02)%1
+  color=Color3.fromHSV(hue,1,1)
+ else
+  color=parseColor(colorBox.Text)
+ end
+ ReplicatedStorage.RequestGlobalAlert:FireServer(msg,color)
+end
+send.MouseButton1Click:Connect(function()
+ fire()
+end)
+rainbowBtn.MouseButton1Click:Connect(function()
+ rainbow=not rainbow
+ rainbowBtn.Text=rainbow and "RAINBOW ON" or "RAINBOW"
+end)
+clear.MouseButton1Click:Connect(function()
+ box.Text=""
+end)
+randomize.MouseButton1Click:Connect(function()
+ randomMode=not randomMode
+ randomize.Text=randomMode and "RANDOM ON" or "RANDOMIZE"
+end)
+spam.MouseButton1Click:Connect(function()
+ spamming=not spamming
+ spam.Text=spamming and "STOP SPAM" or "START SPAM"
+ if spamming then
+  task.spawn(function()
+   while spamming do
+ fire()
+ local t=tonumber(speedBox.Text) or 0.15
+ task.wait(math.clamp(t,0.03,2))
+end
+  end)
+ end
+end)
